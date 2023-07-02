@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import MemoryMechanism from "./MemoryMechanism";
+import StartPage from "./StartPage";
+const App = () => {
+    const [level, setLevel] = useState<"easy" | "medium">();
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    const handleStartGame = (selectedLevel:'easy' | 'medium') => {
+        setLevel(selectedLevel);
+    };
+
+
+    return (
+        <div>
+            {!level ? (
+                <StartPage onStart={handleStartGame} />
+            ) : (
+                <MemoryMechanism selectedLevel={level}/>
+            )}
+        </div>
+    );
+};
 
 export default App;
