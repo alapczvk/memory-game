@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MemoryMechanism from "./MemoryMechanism";
-import StartPage from "./StartPage";
+import MemoryMechanism from "./Components/MemoryMechanism";
+import StartPage from "./Components/StartPage";
 const App = () => {
     const [level, setLevel] = useState<"easy" | "medium">();
 
