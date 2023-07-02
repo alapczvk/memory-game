@@ -56,7 +56,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = ({ selectedLevel }) => {
         }
 
         // If it's not a matched pair, wait one second and flip them back
-        setTimeout(() => {
+        const timeoutId=setTimeout(() => {
             setCards(prev =>
                 prev.map(card =>
                     card.id === clickedCard.id || card.id === currentClickedCard.id
@@ -65,7 +65,6 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = ({ selectedLevel }) => {
                 )
             );
         }, 1000);
-
         setClickedCard(undefined);
     };
 
