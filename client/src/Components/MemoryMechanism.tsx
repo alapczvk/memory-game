@@ -68,7 +68,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = ({ selectedLevel }) => {
                         : card
                 )
             );
-        }, 1000);
+        }, 450);
         setClickedCard(undefined);
         setTimeoutId(id);
     };
