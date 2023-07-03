@@ -4,6 +4,7 @@ import { createBoard4x4, createBoard6x6 } from "../setup";
 import { shuffleArray } from "../utils";
 import { CardType } from "../setup";
 import { Grid } from "./App.styles";
+import Timer from "./Timer";
 
 type MemoryMechanismProps = {
     selectedLevel: "easy" | "medium";
@@ -84,6 +85,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = ({ selectedLevel }) => {
 
     return (
         <div>
+            <Timer gameWon={gameWon}/>
             <Grid boardSize={selectedLevel === "easy" ? 4 : 6}>
                 {cards.map((card) => (
                     <Card key={card.id} card={card} callback={handleCardClick} />
