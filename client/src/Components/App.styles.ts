@@ -6,7 +6,6 @@ export const Grid = styled.div<{ boardSize: number }>`
   grid-gap: 0.5rem;
   max-width: 600px; /* Dostosuj szerokość planszy do swoich preferencji */
   margin: 0 auto; /* Centruj planszę na ekranie */
-  margin-top: 5vh;
   overflow: hidden;
 `;
 export const Choose = styled.button`
@@ -44,8 +43,9 @@ export const Headline=styled.h1`
 export const TimerDiv=styled.div`
   font-family: monospace;
   font-size: 20px;
-  display: inline-block;
+  display: inline-flex;
   background-color: rgba(255, 64, 129, 0.49);
   padding: 10px 20px;
   border-radius: 20px;
+  
 `;
