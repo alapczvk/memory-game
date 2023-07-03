@@ -20,13 +20,14 @@ const App = () => {
 
     return (
         <SocketProvider>
-        <div>
+
+            <div>
             {!level ? (
                 <StartPage onStart={handleStartGame}/>
             ) : (
                 <MemoryMechanism selectedLevel={level}/>
-            )}
-        </div>
+                )}
+            </div>
         </SocketProvider>
     );
 };

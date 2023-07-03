@@ -9,7 +9,7 @@ import requestLogger from './middleware/requestLogger';
 import {logError, logInfo} from "./utils/logger";
 import {SUCCESS} from './helpers/responses/messages';
 import path from 'path';
-// import {v4 as uuidv4} from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {writeFile} from 'fs';
 
 const app = express();
@@ -25,6 +25,15 @@ app.use(cors({
     credentials: true
 }));
 
+//DO WERYFIKACJI FILIPA!!!!!!!!1
+// app.get('/game', (req, res) => {
+//     const level = req.query.level;
+//     res.redirect(`/game/${uuidv4()}`);
+// });
+// app.get('/game/:level', (req, res) => {
+//     const level = req.params.level;
+//     res.send("game");
+// });
 app.use(express.json());
 
 app.use(cookieParser());
@@ -32,6 +41,8 @@ app.use(cookieParser());
 app.use(requestLogger);
 app.use(trimmer);
 app.use('/api', router);
+
+
 
 io.on('connection', socket => {
     logInfo(`[socket] ${socket.id} connected to server`);

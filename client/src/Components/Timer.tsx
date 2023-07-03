@@ -6,7 +6,6 @@ type TimerProps = {
 };
 
 const Timer: React.FC<TimerProps> = ({ gameWon }) => {
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
     const [time, setTime] = useState(0);
 
     useEffect(() => {
