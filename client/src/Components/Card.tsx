@@ -1,7 +1,5 @@
 import React from 'react';
-// Types
-import {CardType} from "../setup";
-// Styles
+import {CardType} from '../setup';
 import { Wrapper, FrontImg, BackImg } from './Card.styles';
 
 type Props = {
@@ -16,8 +14,8 @@ const Card: React.FC<Props> = ({ card, callback }) => {
 
     return (
         <Wrapper onClick={handleClick}>
-            <FrontImg flipped={card.flipped} src={card.frontImage} alt='card-front' />
-            <BackImg flipped={card.flipped} src={card.backImage} alt='card-back' />
+            <FrontImg $flipped={card.flipped} src={card.frontImage} alt='card-front' />
+            <BackImg $flipped={card.flipped} src={card.backImage} alt='card-back' />
         </Wrapper>
     );
 };

@@ -11,7 +11,7 @@ export const Wrapper = styled.div`
 `;
 
 type Props = {
-    flipped: boolean;
+	$flipped: boolean;
 };
 
 const sharedStyles = css`
@@ -24,19 +24,19 @@ const sharedStyles = css`
 `;
 
 export const FrontImg = styled.img<Props>`
-  ${sharedStyles}
+  ${sharedStyles};
   width: 100px; /* Dostosuj szerokość karty do swoich preferencji */
   height: 100px;
-  z-index: ${props => (props.flipped ? 2 : 1)};
-  transform: ${props => (props.flipped ? 'rotate(0deg)' : 'rotateY(180deg)')};
+  z-index: ${props => (props.$flipped ? 2 : 1)};
+  transform: ${props => (props.$flipped ? 'rotate(0deg)' : 'rotateY(180deg)')};
 `;
 
 export const BackImg = styled.img<Props>`
-  ${sharedStyles}
+  ${sharedStyles};
   width: 100px; /* Dostosuj szerokość karty do swoich preferencji */
   height: 100px;
-  z-index: ${props => (props.flipped ? 1 : 2)};
-  transform: ${props => (props.flipped ? 'rotateY(180deg)' : 'rotate(360deg)')};
+  z-index: ${props => (props.$flipped ? 1 : 2)};
+  transform: ${props => (props.$flipped ? 'rotateY(180deg)' : 'rotate(360deg)')};
   position: absolute;
   top: 0px;
   left: 0px;
