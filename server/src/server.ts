@@ -1,16 +1,17 @@
 import express from 'express';
 import http from 'http';
 import config from 'config';
-import { logInfo} from './utils/logger';
+import {logInfo} from './utils/logger';
 import path from 'path';
 import IRoom from './types/IRoom';
 import {
-	getRandomArray,
-	getRandomBinaryDigit,
 	isRoomJoined,
-	roomExists, shuffleArray,
+	isUserACreatorOrJoinerOfRoom,
+	roomExists,
 } from './utils/rooms';
 import requestLogger from './middleware/requestLogger';
+import IRoomObjectList from './types/IRoomObjectList';
+import {getRandomArray, getRandomBinaryDigit, shuffleArray} from './utils';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -20,7 +21,7 @@ const io = require('socket.io')(httpServer, {
 	}
 });
 
-const rooms: { [key: string]: IRoom; } = {};
+const rooms: IRoomObjectList = {};
 const logGameEvents = true;
 
 io.on('connection', socket => {
@@ -78,6 +79,10 @@ io.on('connection', socket => {
 
 		socket.on('disconnect', () => {
 			logGameEvents && logInfo(`[GAME] Player with socket.id=${socket.id} disconnected from room with ID=${data.roomId}`);
+
+			if (!isUserACreatorOrJoinerOfRoom(socket.id, data.roomId, rooms)) {
+				return;
+			}
 
 			socket.to(data.roomId).emit('opponent-left', {
 				success: false,

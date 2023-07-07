@@ -1,13 +1,11 @@
 import React from 'react';
-// Types
-import {CardType} from "../setup";
-// Styles
 import { Wrapper, FrontImg, BackImg } from './Card.styles';
+import ICard from '../types/ICard';
 
 type Props = {
-   card: CardType;
+   card: ICard;
    disabled: boolean;
-   callback: (card: CardType) => any;
+   callback: (card: ICard) => any;
 };
 
 const Card: React.FC<Props> = ({ card, disabled, callback }) => {

@@ -1,6 +1,6 @@
 import React from 'react';
-import MemoryMechanism from './Components/MemoryMechanism';
-import StartPage from "./Components/StartPage";
+import MemoryMechanism from './components/MemoryMechanism';
+import StartPage from "./components/StartPage";
 import {SocketProvider} from './contexts/SocketContext';
 import {BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import {v4 as uuidv4} from 'uuid';
