@@ -31,6 +31,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 
 	const {socket, isConnected, isRoomJoined, setIsRoomJoined} = useSocket() as ISocketContext;
 
+	// difficulty level and board size (based on URL `level` param)
 	useEffect(() => {
 		const level = searchParams.get('level') || 'easy';
 
@@ -38,6 +39,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		setBoardSize(level === 'easy' ? 4 : 6);
 	}, [searchParams]);
 
+	// function to flip card selected by its index
 	const flipCard = (cardId: number, flipped: boolean, clickable: boolean) => {
 		setCards(prev =>
 			prev?.map((card, index) =>
@@ -150,7 +152,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 			playerB: IPoints
 		}) => {
 			console.log(`[INFO] ${response.msg}`);
-			winner == null &&  alert(response.msg);
+			winner == null && alert(response.msg);
 			setIsOpponentJoined(false);
 			setOpponentLeft(true);
 			socket?.disconnect();
@@ -254,6 +256,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		}
 	}, [amIPlayerA, socket]);
 
+	// card click handler
 	const handleCardClick = (currentClickedCard: CardType) => {
 		flipCard(currentClickedCard.id, true, false);
 
@@ -331,17 +334,27 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 	}, [timeoutIds]);
 
 	return <>
-		{isOpponentJoined ? <div>
+		{isOpponentJoined ?
+			<div>
 				<Timer gameWinner={winner}/>
-				{isMyTurn !== null && <h2>{isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!'}</h2>}
-				{playerAPoints !== null &&
-					playerBPoints !== null &&
+
+				{winner != null && winner === 'draw' && <h2>It's a draw!</h2>}
+				{winner != null && ((winner === 'a' && amIPlayerA) || (!amIPlayerA && winner === 'b')) ?
+					<h2>You won!</h2> :
+					<h2>Your opponent won!</h2>
+				}
+
+				{isMyTurn != null && winner == null &&
+                <h2>{isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!'}</h2>
+				}
+
+				{playerAPoints !== null && playerBPoints !== null &&
                 <>
                     <div>You: {JSON.stringify(amIPlayerA ? playerAPoints : playerBPoints)}</div>
-
                     <div>Opponent: {JSON.stringify(!amIPlayerA ? playerAPoints : playerBPoints)}</div>
                 </>
 				}
+
 				<Grid $boardSize={selectedLevel === "easy" ? 4 : 6}>
 					{cards?.map((card) => (
 						<Card key={card.id} disabled={!isMyTurn} card={card} callback={handleCardClick}/>
