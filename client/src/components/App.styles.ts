@@ -4,10 +4,11 @@ export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
   grid-template-columns: repeat(${props => props.$boardSize}, minmax(50px, 1fr));
   grid-gap: 0.5rem;
-  max-width: 600px; /* Dostosuj szerokość planszy do swoich preferencji */
-  margin: 0 auto; /* Centruj planszę na ekranie */
+  max-width: 600px;
+  margin: 0 auto;
   overflow: hidden;
 `;
+
 export const Button = styled.button`
   background-color: rgba(255, 64, 129, 0.49);
   color: white;
@@ -33,20 +34,21 @@ export const Button = styled.button`
     transform-style: preserve-3d;
   }
 `;
-export const Headline=styled.h1`
+
+export const Headline = styled.h1`
   font-size: 3rem;
   color: #7b3148;
   text-align: center;
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-family: 'Cambria Math';
+  font-family: 'Cambria Math',serif;
 `;
-export const TimerDiv=styled.div`
+
+export const TimerDiv = styled.div`
   font-family: monospace;
   font-size: 20px;
   display: inline-flex;
   background-color: rgba(255, 64, 129, 0.49);
   padding: 10px 20px;
   border-radius: 20px;
-
 `;

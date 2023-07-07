@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  backend:
+  af-memory-game-backend:
     image: af-memory-game:1.0
     volumes:
       - /var/data/AF-memory-game/client/build/:/app/public

@@ -10,7 +10,7 @@ function requestLogger (req: Request, res: Response, next: NextFunction) {
         return next();
     }
 
-    logInfo('[REST] ' + req.method + ' ' + req.originalUrl);
+    logInfo('[HTTP] ' + req.method + ' ' + req.originalUrl);
     next();
 }
 

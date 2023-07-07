@@ -1,22 +1,22 @@
 import React, {useEffect, useState} from "react";
 import Card from "./Card";
 import {createBoard} from "../setup";
-import {CardType} from "../setup";
 import {Grid} from "./App.styles";
 import Timer from "./Timer";
 import {useParams, useSearchParams} from 'react-router-dom';
 import {useSocket} from '../contexts/SocketContext';
 import ISocketContext from '../types/ISocketContext';
 import IRoom, {IPoints} from '../types/IRoom';
+import ICard from '../types/ICard';
 
 type MemoryMechanismProps = {};
 
 const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
-	const [cards, setCards] = useState<CardType[]>();
+	const [cards, setCards] = useState<ICard[]>();
 	const [boardSize, setBoardSize] = useState<number | null>(null);
 	const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 	const [winner, setWinner] = useState<'a' | 'b' | 'draw' | null>(null);
-	const [clickedCard, setClickedCard] = useState<undefined | CardType>(undefined);
+	const [clickedCard, setClickedCard] = useState<undefined | ICard>(undefined);
 	const [timeoutIds, setTimeoutIds] = useState<NodeJS.Timeout[]>([]);
 	const [isMyTurn, setIsMyTurn] = useState<boolean | null>(null);
 	const [playerAPoints, setPlayerAPoints] = useState<IPoints>({points: 0, attempts: 0});
@@ -31,6 +31,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 
 	const {socket, isConnected, isRoomJoined, setIsRoomJoined} = useSocket() as ISocketContext;
 
+	// difficulty level and board size (based on URL `level` param)
 	useEffect(() => {
 		const level = searchParams.get('level') || 'easy';
 
@@ -38,6 +39,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		setBoardSize(level === 'easy' ? 4 : 6);
 	}, [searchParams]);
 
+	// function to flip card selected by its index
 	const flipCard = (cardId: number, flipped: boolean, clickable: boolean) => {
 		setCards(prev =>
 			prev?.map((card, index) =>
@@ -61,11 +63,13 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 			winner == null && alert('No connection. Exiting...');
 			setIsOpponentJoined(false);
 		}
-	}, [isConnected, isOpponentJoined]);
+	}, [isConnected, isOpponentJoined, winner]);
 
 	// join-or-create-room
 	useEffect(() => {
 		if (isRoomJoined) return;
+
+		if (roomId == null || boardSize == null) return;
 
 		socket?.emit('join-or-create-room', {roomId, boardSize});
 	}, [boardSize, isRoomJoined, roomId, socket]);
@@ -73,6 +77,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 	// join-or-create-room-error
 	useEffect(() => {
 		const handler = (response: { success: boolean, msg: string, roomId: string }) => {
+			alert(response.msg);
 			console.error(`[ERROR] ${response.msg}`);
 		};
 		socket?.on('join-or-create-room-error', handler);
@@ -124,7 +129,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		return () => {
 			socket?.off('room-joined', handler);
 		}
-	}, [selectedLevel, socket]);
+	}, [selectedLevel, setIsRoomJoined, setSearchParams, socket]);
 
 	// player-joined
 	useEffect(() => {
@@ -150,7 +155,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 			playerB: IPoints
 		}) => {
 			console.log(`[INFO] ${response.msg}`);
-			winner == null &&  alert(response.msg);
+			winner == null && alert(response.msg);
 			setIsOpponentJoined(false);
 			setOpponentLeft(true);
 			socket?.disconnect();
@@ -162,7 +167,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 			socket?.off('opponent-left', handler);
 			socket?.disconnect();
 		}
-	}, [socket]);
+	}, [opponentLeft, socket, winner]);
 
 	// opponent-single-guess-attempt
 	useEffect(() => {
@@ -208,7 +213,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 				setIsMyTurn(prev => !prev);
 			}, 750);
 
-			setTimeoutIds([...timeoutIds, id]);
+			setTimeoutIds(prev => [...prev, id]);
 		};
 		socket?.on('opponent-guess-attempt', handler);
 
@@ -244,7 +249,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 						? 'You won!' : 'Your opponent won!');
 			}, 1200);
 
-			setTimeoutIds([...timeoutIds, id]);
+			setTimeoutIds(prev => [...prev, id]);
 		};
 
 		socket?.on('game-over', handler);
@@ -254,7 +259,8 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		}
 	}, [amIPlayerA, socket]);
 
-	const handleCardClick = (currentClickedCard: CardType) => {
+	// card click handler
+	const handleCardClick = (currentClickedCard: ICard) => {
 		flipCard(currentClickedCard.id, true, false);
 
 		socket?.emit('single-guess-attempt', {
@@ -331,17 +337,28 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 	}, [timeoutIds]);
 
 	return <>
-		{isOpponentJoined ? <div>
+		{isOpponentJoined ?
+			<div>
 				<Timer gameWinner={winner}/>
-				{isMyTurn !== null && <h2>{isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!'}</h2>}
-				{playerAPoints !== null &&
-					playerBPoints !== null &&
+
+				{winner != null && winner === 'draw' && <h2>It's a draw!</h2>}
+				{winner != null &&
+					(((winner === 'a' && amIPlayerA) || (!amIPlayerA && winner === 'b')) ?
+						<h2>You won!</h2> :
+						<h2>Your opponent won!</h2>)
+				}
+
+				{isMyTurn != null && winner == null &&
+                <h2>{isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!'}</h2>
+				}
+
+				{playerAPoints !== null && playerBPoints !== null &&
                 <>
                     <div>You: {JSON.stringify(amIPlayerA ? playerAPoints : playerBPoints)}</div>
-
                     <div>Opponent: {JSON.stringify(!amIPlayerA ? playerAPoints : playerBPoints)}</div>
                 </>
 				}
+
 				<Grid $boardSize={selectedLevel === "easy" ? 4 : 6}>
 					{cards?.map((card) => (
 						<Card key={card.id} disabled={!isMyTurn} card={card} callback={handleCardClick}/>
