@@ -1,23 +1,26 @@
 import React from 'react';
-import {CardType} from '../setup';
+// Types
+import {CardType} from "../setup";
+// Styles
 import { Wrapper, FrontImg, BackImg } from './Card.styles';
 
 type Props = {
-    card: CardType;
-    callback: (card: CardType) => void;
+   card: CardType;
+   disabled: boolean;
+   callback: (card: CardType) => any;
 };
 
-const Card: React.FC<Props> = ({ card, callback }) => {
-    const handleClick = () => {
-        if (card.clickable) callback(card);
-    };
+const Card: React.FC<Props> = ({ card, disabled, callback }) => {
+   const handleClick = () => {
+      if (card.clickable && !disabled) callback(card);
+   };
 
-    return (
-        <Wrapper onClick={handleClick}>
-            <FrontImg $flipped={card.flipped} src={card.frontImage} alt='card-front' />
-            <BackImg $flipped={card.flipped} src={card.backImage} alt='card-back' />
-        </Wrapper>
-    );
+   return (
+      <Wrapper onClick={handleClick}>
+         <FrontImg $disabled={disabled} $clickable={card.clickable} $flipped={card.flipped} src={card.frontImage} alt='card-front' />
+         <BackImg $disabled={disabled} $clickable={card.clickable} $flipped={card.flipped} src={card.backImage} alt='card-back' />
+      </Wrapper>
+   );
 };
 
 export default Card;

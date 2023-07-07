@@ -6,10 +6,9 @@ import path from 'path';
 import IRoom from './types/IRoom';
 import {
 	getRandomArray,
-	getRandomBinaryDigit, isGuessCorrect,
+	getRandomBinaryDigit,
 	isRoomJoined,
-	roomExists,
-	shuffleArray
+	roomExists, shuffleArray,
 } from './utils/rooms';
 import requestLogger from './middleware/requestLogger';
 
@@ -29,6 +28,40 @@ io.on('connection', socket => {
 
 	socket.on('disconnect', () => {
 		logInfo(`[socket] ${socket.id} disconnected from server`);
+
+		// find left room and destroy it
+		let leftRoom: IRoom;
+
+		for (const key in rooms) {
+			if (!rooms.hasOwnProperty(key)) continue;
+
+			const room = rooms[key];
+
+			if (room?.joinedBySocketId === socket.id) {
+				leftRoom = room;
+				break;
+			}
+		}
+
+		if (leftRoom == null) return;
+
+		socket.to(leftRoom.id).emit('opponent-left', {
+			success: false,
+			msg: 'Your opponent has left!',
+			playerA: leftRoom.playerA,
+			playerB: leftRoom.playerB
+		});
+
+
+		if (io.sockets.sockets[leftRoom?.joinedBySocketId]) {
+			io.sockets.sockets[leftRoom?.joinedBySocketId].disconnect();
+		}
+
+		// clear room
+		rooms[leftRoom.id] = undefined;
+		logGameEvents && logInfo(`[GAME] Room with ID=${leftRoom.id} has been destroyed`);
+
+		return;
 	});
 
 	socket.emit('greeting-from-server', {msg: 'Hello Client'});
@@ -45,6 +78,7 @@ io.on('connection', socket => {
 
 		socket.on('disconnect', () => {
 			logGameEvents && logInfo(`[GAME] Player with socket.id=${socket.id} disconnected from room with ID=${data.roomId}`);
+
 			socket.to(data.roomId).emit('opponent-left', {
 				success: false,
 				msg: 'Your opponent has left!',
@@ -59,88 +93,90 @@ io.on('connection', socket => {
 			return;
 		});
 
-		socket.on('guess-attempt', (guessData) => {
+		socket.on('single-guess-attempt', (guessData) => {
 			const game = rooms[data.roomId];
 
-			if (guessData.cardIdexes == null || guessData.cardIdexes.length !== 2 ||
-				guessData.cardIdexes[0] > game.board.length - 1 ||
-				guessData.cardIdexes[1] > game.board.length - 1) {
+			if (guessData.cardIndex == null ||
+				guessData.cardIndexes > game.board.length - 1) {
 
 				logGameEvents && logInfo('[GAME] Invalid request params');
 
-				socket.emit('guess-attempt-error', {
+				socket.emit('ingle-guess-attempt-error', {
 					success: false,
 					msg: 'Invalid request params!'
 				});
 				return;
 			}
 
-			socket.to(data.roomId).emit('opponent-guess-attempt', guessData.cardIdexes);
+			socket.to(data.roomId).emit('opponent-single-guess-attempt', guessData.cardIndex);
+		});
 
-			if (isGuessCorrect(guessData.cardIdexes, game.board)) {
-				logGameEvents && logInfo('[GAME] Correct guess');
+		socket.on('guess-attempt', (guessData) => {
+			logGameEvents && logInfo('[GAME] Guess attempt');
 
-				if (rooms[data.roomId].turn === 'a') {
+			const game = rooms[data.roomId];
+			if (guessData.cardIndexes == null ||
+				guessData.cardIndexes.length !== 2 ||
+				guessData.cardIndexes[0] > game.board.length - 1 ||
+				guessData.cardIndexes[1] > game.board.length - 1 ||
+				guessData.correct == null) {
+
+				logGameEvents && logInfo('[GAME] Invalid request params');
+
+				socket.emit('guess-correct-error', {
+					success: false,
+					msg: 'Invalid request params!'
+				});
+				return;
+			}
+
+			if (guessData.correct) {
+				if (game.turn === 'a') {
 					rooms[data.roomId].playerA.points += 1;
-					rooms[data.roomId].playerA.attempts += 1;
 				} else {
 					rooms[data.roomId].playerB.points += 1;
-					rooms[data.roomId].playerB.attempts += 1;
 				}
 
-				const nextTurn = rooms[data.roomId].turn === 'a' ? 'b' : 'a';
-				rooms[data.roomId].turn = nextTurn;
+				rooms[data.roomId].guessedCardsIndexes.push(guessData.cardIndexes[0], guessData.cardIndexes[1]);
+			}
 
-				io.sockets.in(data.roomId).emit('guess-correct', {
-					success: true,
-					msg: 'Correct!',
-					nextTurn,
-					playerA: rooms[data.roomId].playerA,
-					playerB: rooms[data.roomId].playerB
-				});
-
-				rooms[data.roomId].guessedCardsIndexes.push(guessData.cardIdexes[0], guessData.cardIdexes[1]);
-
-				// game over
-				if (rooms[data.roomId].guessedCardsIndexes.length === rooms[data.roomId].board.length) {
-					const game = rooms[data.roomId];
-
-					let winner;
-					if (game.playerA === game.playerB) {
-						winner = 'draw';
-					} else if (game.playerA > game.playerB) {
-						winner = 'a'
-					} else {
-						winner = 'b';
-					}
-
-					logGameEvents && logInfo(`[GAME] ${winner === 'draw' ? 'Game over: DRAW' : 'Game over: ' + winner.toUpperCase() + ' wins!'}`);
-
-					io.sockets.in(data.roomId).emit('game-over', {
-						success: true,
-						msg: winner === 'draw' ? 'Game over: DRAW' : 'Game over: ' + winner.toUpperCase() + ' wins!',
-						winner,
-						room: game
-					});
-				}
+			if (game.turn === 'a') {
+				rooms[data.roomId].playerA.attempts += 1;
 			} else {
-				logGameEvents && logInfo('[GAME] Incorrect guess');
+				rooms[data.roomId].playerB.attempts += 1;
+			}
 
-				if (rooms[data.roomId].turn === 'a') {
-					rooms[data.roomId].playerA.attempts += 1;
+			const nextTurn = rooms[data.roomId].turn === 'a' ? 'b' : 'a';
+			rooms[data.roomId].turn = nextTurn;
+
+			socket.to(data.roomId).emit('opponent-guess-attempt', {
+				success: true,
+				msg: guessData.correct ? 'Correct!' : 'Incorrect!',
+				correct: guessData.correct,
+				chosenCards: guessData.cardIndexes,
+				playerA: rooms[data.roomId].playerA,
+				playerB: rooms[data.roomId].playerB,
+				nextTurn
+			});
+
+			// game over
+			if (rooms[data.roomId].guessedCardsIndexes.length === rooms[data.roomId].board.length) {
+				let winner;
+				if (game.playerA.points === game.playerB.points) {
+					winner = 'draw';
+				} else if (game.playerA.points > game.playerB.points) {
+					winner = 'a'
 				} else {
-					rooms[data.roomId].playerB.attempts += 1;
+					winner = 'b';
 				}
 
-				const nextTurn = rooms[data.roomId].turn === 'a' ? 'b' : 'a';
-				rooms[data.roomId].turn = nextTurn;
+				logGameEvents && logInfo(`[GAME] ${winner === 'draw' ? 'Game over: DRAW' : 'Game over: ' + winner.toUpperCase() + ' wins!'}`);
 
-				io.sockets.in(data.roomId).emit('guess-incorrect', {
+				io.sockets.in(data.roomId).emit('game-over', {
 					success: true,
-					msg: 'Incorrect!',
-					nextTurn,
-					playerA: rooms[data.roomId].playerA,
-					playerB: rooms[data.roomId].playerB
+					msg: winner === 'draw' ? 'Game over: DRAW' : 'Game over: player ' + winner.toUpperCase() + ' wins!',
+					winner,
+					room: game
 				});
 			}
 		});
@@ -158,8 +194,6 @@ io.on('connection', socket => {
 				return;
 			}
 
-			// console.table(rooms)
-
 			// join room
 			socket.join(data.roomId);
 
@@ -172,7 +206,7 @@ io.on('connection', socket => {
 				room: rooms[data.roomId]
 			});
 
-			logGameEvents && logInfo(`[GAME] Room with ID=${data.roomId} has been joined`);
+			logGameEvents && logInfo(`[GAME] Room with ID=${data.roomId} has been joined by ${socket.id}`);
 
 			socket.to(data.roomId).emit('player-joined', socket.id);
 
@@ -187,7 +221,7 @@ io.on('connection', socket => {
 
 			// prepare cards
 			const numberOfCards = data.boardSize * data.boardSize;
-			const randomArray = getRandomArray(numberOfCards / 2);
+			const randomArray = getRandomArray(18, numberOfCards / 2);
 
 			const newRoom: IRoom = {
 				id: data.roomId,
@@ -204,7 +238,7 @@ io.on('connection', socket => {
 
 			rooms[data.roomId] = newRoom;
 
-			logGameEvents && logInfo(`[GAME] Room with ID=${data.roomId} has been created`);
+			logGameEvents && logInfo(`[GAME] Room with ID=${data.roomId} has been created by ${socket.id}`);
 
 			socket.emit('room-joined', {
 				success: true,

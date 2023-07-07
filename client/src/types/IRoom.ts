@@ -7,7 +7,7 @@ export default interface IRoom {
 	boardSize: number,
 	playerA: IPoints,
 	playerB: IPoints,
-	turn: string,
+	turn: 'a' | 'b',
 	createdAt: Date
 };
 

@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {TimerDiv} from "./App.styles";
 
 type TimerProps = {
-	gameWon: boolean;
+	gameWinner: 'a' | 'b' | 'draw' | null;
 };
 
-const Timer: React.FC<TimerProps> = ({gameWon}) => {
+const Timer: React.FC<TimerProps> = ({gameWinner}) => {
 	const [time, setTime] = useState(0);
 
 	useEffect(() => {
-		if (gameWon) {
+		if (gameWinner) {
 			return;
 		}
 
@@ -20,7 +20,7 @@ const Timer: React.FC<TimerProps> = ({gameWon}) => {
 		return () => {
 			clearInterval(timerId);
 		};
-	}, [gameWon]);
+	}, [gameWinner]);
 
 	const formatTime = (timeInSeconds: number): string => {
 		const minutes = Math.floor(timeInSeconds / 60);

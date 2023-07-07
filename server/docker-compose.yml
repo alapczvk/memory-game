@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  backend:
+    image: af-memory-game:1.0
+    volumes:
+      - /var/data/AF-memory-game/client/build/:/app/public
+    restart: on-failure
+    command: >
+      bash -c "node src/index.js"
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - ORIGIN=https://afmemory.fkor.us

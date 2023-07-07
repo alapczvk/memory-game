@@ -12,7 +12,6 @@ export const Button = styled.button`
   background-color: rgba(255, 64, 129, 0.49);
   color: white;
   font-size: 1.2rem;
-  margin: 1rem;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 5px;
@@ -34,7 +33,7 @@ export const Button = styled.button`
     transform-style: preserve-3d;
   }
 `;
-export const Headline = styled.h1`
+export const Headline=styled.h1`
   font-size: 3rem;
   color: #7b3148;
   text-align: center;
@@ -42,11 +41,12 @@ export const Headline = styled.h1`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   font-family: 'Cambria Math';
 `;
-export const TimerDiv = styled.div`
+export const TimerDiv=styled.div`
   font-family: monospace;
   font-size: 20px;
   display: inline-flex;
   background-color: rgba(255, 64, 129, 0.49);
   padding: 10px 20px;
   border-radius: 20px;
+
 `;
