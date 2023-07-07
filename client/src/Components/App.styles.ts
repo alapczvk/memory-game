@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
-export const Grid = styled.div<{ boardSize: number }>`
+export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => props.boardSize}, minmax(50px, 1fr));
+  grid-template-columns: repeat(${props => props.$boardSize}, minmax(50px, 1fr));
   grid-gap: 0.5rem;
   max-width: 600px; /* Dostosuj szerokość planszy do swoich preferencji */
   margin: 0 auto; /* Centruj planszę na ekranie */
   overflow: hidden;
 `;
-export const Choose = styled.button`
+export const Button = styled.button`
   background-color: rgba(255, 64, 129, 0.49);
   color: white;
   font-size: 1.2rem;
@@ -21,6 +21,7 @@ export const Choose = styled.button`
   align-content: center;
   height: 10rem;
   width: 10rem;
+
   &:hover {
     background-color: #7b3148;
   }
@@ -39,7 +40,7 @@ export const Headline=styled.h1`
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   font-family: 'Cambria Math';
-    `;
+`;
 export const TimerDiv=styled.div`
   font-family: monospace;
   font-size: 20px;
@@ -47,5 +48,5 @@ export const TimerDiv=styled.div`
   background-color: rgba(255, 64, 129, 0.49);
   padding: 10px 20px;
   border-radius: 20px;
-  
+
 `;

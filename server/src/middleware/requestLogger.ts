@@ -10,8 +10,8 @@ function requestLogger (req: Request, res: Response, next: NextFunction) {
         return next();
     }
 
-    logInfo(req.method + ' ' + req.originalUrl);
+    logInfo('[REST] ' + req.method + ' ' + req.originalUrl);
     next();
-};
+}
 
 export default requestLogger;

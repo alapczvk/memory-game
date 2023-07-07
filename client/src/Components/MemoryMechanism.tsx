@@ -1,98 +1,355 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Card from "./Card";
-import { createBoard4x4, createBoard6x6 } from "../setup";
-import { shuffleArray } from "../utils";
-import { CardType } from "../setup";
-import { Grid } from "./App.styles";
+import {createBoard} from "../setup";
+import {CardType} from "../setup";
+import {Grid} from "./App.styles";
 import Timer from "./Timer";
+import {useParams, useSearchParams} from 'react-router-dom';
+import {useSocket} from '../contexts/SocketContext';
+import ISocketContext from '../types/ISocketContext';
+import IRoom, {IPoints} from '../types/IRoom';
 
-type MemoryMechanismProps = {
-    selectedLevel: "easy" | "medium";
-};
+type MemoryMechanismProps = {};
 
-const MemoryMechanism: React.FC<MemoryMechanismProps> = ({ selectedLevel }) => {
-    const [cards, setCards] = useState<CardType[]>(shuffleArray(createBoard4x4()));
-    const [gameWon, setGameWon] = useState(false);
-    const [matchedPairs, setMatchedPairs] = useState(0);
-    const [clickedCard, setClickedCard] = useState<undefined | CardType>(undefined);
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
+	const [cards, setCards] = useState<CardType[]>();
+	const [boardSize, setBoardSize] = useState<number | null>(null);
+	const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+	const [winner, setWinner] = useState<'a' | 'b' | 'draw' | null>(null);
+	const [clickedCard, setClickedCard] = useState<undefined | CardType>(undefined);
+	const [timeoutIds, setTimeoutIds] = useState<NodeJS.Timeout[]>([]);
+	const [isMyTurn, setIsMyTurn] = useState<boolean | null>(null);
+	const [playerAPoints, setPlayerAPoints] = useState<IPoints>({points: 0, attempts: 0});
+	const [playerBPoints, setPlayerBPoints] = useState<IPoints>({points: 0, attempts: 0});
+	const [amIPlayerA, setAmIPlayerA] = useState<boolean | null>(null);
+	const [isOpponentJoined, setIsOpponentJoined] = useState<boolean>(false);
+	const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (selectedLevel === "easy") {
-            const newCards = shuffleArray(createBoard4x4());
-            setCards(newCards);
-        } else {
-            const newCards = shuffleArray(createBoard6x6());
-            setCards(newCards);
-        }
-    }, [selectedLevel]);
+	const {id: roomId} = useParams<string>();
 
-    useEffect(() => {
-        if (matchedPairs === cards.length / 2) {
-            console.log("Game Won!");
-            setGameWon(true);
-        }
-    }, [matchedPairs, cards]);
+	const [searchParams, setSearchParams] = useSearchParams();
 
-    const handleCardClick = (currentClickedCard: CardType) => {
-        // Flip the card
-        setCards((prev) =>
-            prev.map((card) =>
-                card.id === currentClickedCard.id ? { ...card, flipped: true, clickable: false } : card
-            )
-        );
-        // If this is the first card that is flipped
-        // just keep it flipped
-        if (!clickedCard) {
-            setClickedCard({ ...currentClickedCard });
-            return;
-        }
+	const {socket, isConnected, isRoomJoined, setIsRoomJoined} = useSocket() as ISocketContext;
 
-        // If it's a match
-        if (clickedCard.matchingCardId === currentClickedCard.id) {
-            setMatchedPairs((prev) => prev + 1);
-            setCards((prev) =>
-                prev.map((card) =>
-                    card.id === clickedCard.id || card.id === currentClickedCard.id ? { ...card, clickable: false } : card
-                )
-            );
-            setClickedCard(undefined);
-            return;
-        }
+	useEffect(() => {
+		const level = searchParams.get('level') || 'easy';
 
-        // If it's not a matched pair, wait one second and flip them back
-        const id = setTimeout(() => {
-            setCards((prev) =>
-                prev.map((card) =>
-                    card.id === clickedCard.id || card.id === currentClickedCard.id
-                        ? { ...card, flipped: false, clickable: true }
-                        : card
-                )
-            );
-        }, 450);
-        setClickedCard(undefined);
-        setTimeoutId(id);
-    };
+		setSelectedLevel(level);
+		setBoardSize(level === 'easy' ? 4 : 6);
+	}, [searchParams]);
 
-    // Cleanup function
-    useEffect(() => {
-        return () => {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-            }
-        };
-    }, [timeoutId]);
+	const flipCard = (cardId: number, flipped: boolean, clickable: boolean) => {
+		setCards(prev =>
+			prev?.map((card, index) =>
+				index === cardId ? {...card, flipped, clickable} : card
+			)
+		);
+	};
 
-    return (
-        <div>
-            <Timer gameWon={gameWon}/>
-            <Grid boardSize={selectedLevel === "easy" ? 4 : 6}>
-                {cards.map((card) => (
-                    <Card key={card.id} card={card} callback={handleCardClick} />
-                ))}
-            </Grid>
-        </div>
-    );
+	// socket.io connect/disconnect
+	useEffect(() => {
+		socket?.connect();
+
+		return () => {
+			socket?.disconnect();
+		};
+	}, [socket]);
+
+	// connection error
+	useEffect(() => {
+		if (!isConnected && isOpponentJoined) {
+			winner == null && alert('No connection. Exiting...');
+			setIsOpponentJoined(false);
+		}
+	}, [isConnected, isOpponentJoined]);
+
+	// join-or-create-room
+	useEffect(() => {
+		if (isRoomJoined) return;
+
+		socket?.emit('join-or-create-room', {roomId, boardSize});
+	}, [boardSize, isRoomJoined, roomId, socket]);
+
+	// join-or-create-room-error
+	useEffect(() => {
+		const handler = (response: { success: boolean, msg: string, roomId: string }) => {
+			console.error(`[ERROR] ${response.msg}`);
+		};
+		socket?.on('join-or-create-room-error', handler);
+
+		return () => {
+			socket?.off('join-or-create-room-error', handler);
+		}
+	}, [socket]);
+
+	// room-joined (or created)
+	useEffect(() => {
+		const handler = (response: { success: boolean, msg: string, room: IRoom }) => {
+			console.log(`[GAME] ${response.msg}`);
+
+			setIsRoomJoined(true);
+
+			if (selectedLevel === 'medium' && response.room.boardSize === 4) {
+				setSearchParams(params => {
+					params.set('level', 'easy');
+					return params;
+				});
+			}
+
+			if (selectedLevel === 'easy' && response.room.boardSize === 6) {
+				setSearchParams(params => {
+					params.set('level', 'medium');
+					return params;
+				});
+			}
+
+			setCards(createBoard(response.room.board));
+
+			setIsMyTurn((response.room.turn === 'a' &&
+					socket?.id === response.room.createdBySocketId) ||
+				(response.room.turn === 'b' &&
+					socket?.id === response.room.joinedBySocketId));
+
+			setPlayerAPoints(response.room.playerA);
+			setPlayerBPoints(response.room.playerB);
+			setAmIPlayerA(socket?.id === response.room.createdBySocketId);
+			if (response.room.joinedBySocketId != null) {
+				setIsOpponentJoined(true);
+				setOpponentLeft(false);
+			}
+		};
+
+		socket?.on('room-joined', handler);
+
+		return () => {
+			socket?.off('room-joined', handler);
+		}
+	}, [selectedLevel, socket]);
+
+	// player-joined
+	useEffect(() => {
+		const handler = (joinedBySocketId: string) => {
+			console.log(`[GAME] Game joined by ${joinedBySocketId}`);
+			setIsOpponentJoined(true);
+			setOpponentLeft(false);
+		};
+
+		socket?.on('player-joined', handler);
+
+		return () => {
+			socket?.off('player-joined', handler);
+		}
+	}, [socket]);
+
+	// opponent-left
+	useEffect(() => {
+		const handler = (response: {
+			success: boolean,
+			msg: string,
+			playerA: IPoints,
+			playerB: IPoints
+		}) => {
+			console.log(`[INFO] ${response.msg}`);
+			winner == null &&  alert(response.msg);
+			setIsOpponentJoined(false);
+			setOpponentLeft(true);
+			socket?.disconnect();
+		};
+
+		socket?.on('opponent-left', handler);
+
+		return () => {
+			socket?.off('opponent-left', handler);
+			socket?.disconnect();
+		}
+	}, [socket]);
+
+	// opponent-single-guess-attempt
+	useEffect(() => {
+		const handler = (cardIndex: number) => {
+			console.log(`[GAME] Opponent guesses: ${cardIndex}`);
+			flipCard(cardIndex, true, false);
+		};
+		socket?.on('opponent-single-guess-attempt', handler);
+
+		return () => {
+			socket?.off('opponent-single-guess-attempt', handler);
+		}
+	}, [socket]);
+
+	// opponent-guess-attempt
+	useEffect(() => {
+		const handler = (response: {
+			success: boolean,
+			msg: string,
+			correct: boolean,
+			chosenCards: number[],
+			playerA: IPoints,
+			playerB: IPoints,
+			nextTurn: 'a' | 'b'
+		}) => {
+			console.log(`[GAME] Opponent guessed: ${response.msg}`);
+
+			if (response.correct) {
+				flipCard(response.chosenCards[0], true, false);
+				flipCard(response.chosenCards[1], true, false);
+			} else {
+				const id = setTimeout(() => {
+					flipCard(response.chosenCards[0], false, true);
+					flipCard(response.chosenCards[1], false, true);
+				}, 750);
+
+				setTimeoutIds([...timeoutIds, id]);
+			}
+
+			const id = setTimeout(() => {
+				setPlayerAPoints(response.playerA);
+				setPlayerBPoints(response.playerB);
+				setIsMyTurn(prev => !prev);
+			}, 750);
+
+			setTimeoutIds([...timeoutIds, id]);
+		};
+		socket?.on('opponent-guess-attempt', handler);
+
+		return () => {
+			socket?.off('opponent-guess-attempt', handler);
+		}
+	}, [socket]);
+
+	// game-over
+	useEffect(() => {
+		const handler = (response: {
+			success: boolean,
+			msg: string
+			winner: 'a' | 'b' | 'draw',
+			room: IRoom
+		}) => {
+			console.log(`[GAME] ${response.msg}`);
+			setIsMyTurn(false); // there is no one's turn!
+
+			const id = setTimeout(() => {
+				setPlayerAPoints(response.room.playerA);
+				setPlayerBPoints(response.room.playerB);
+
+				setWinner(response.winner);
+
+				if (response.winner === 'draw') {
+					return alert('It\'s a draw!');
+				}
+
+				alert(
+					(amIPlayerA && response.winner === 'a') ||
+					(!amIPlayerA && response.winner === 'b')
+						? 'You won!' : 'Your opponent won!');
+			}, 1200);
+
+			setTimeoutIds([...timeoutIds, id]);
+		};
+
+		socket?.on('game-over', handler);
+
+		return () => {
+			socket?.off('game-over', handler);
+		}
+	}, [amIPlayerA, socket]);
+
+	const handleCardClick = (currentClickedCard: CardType) => {
+		flipCard(currentClickedCard.id, true, false);
+
+		socket?.emit('single-guess-attempt', {
+			cardIndex: currentClickedCard.id
+		});
+
+		// If this is the first card that is flipped
+		// just keep it flipped
+		if (clickedCard == null) {
+			setClickedCard({...currentClickedCard});
+			return;
+		}
+
+		if (currentClickedCard.id !== clickedCard.id) {
+			const isCorrect = currentClickedCard.boardIdx === clickedCard.boardIdx;
+
+			socket?.emit('guess-attempt', {
+				cardIndexes: [currentClickedCard.id, clickedCard.id],
+				correct: isCorrect
+			});
+
+			if (isCorrect) {
+				flipCard(currentClickedCard.id, true, false);
+				flipCard(clickedCard.id, true, false);
+			} else {
+				const id = setTimeout(() => {
+					flipCard(currentClickedCard.id, false, true);
+					flipCard(clickedCard.id, false, true);
+				}, 750);
+				setTimeoutIds([...timeoutIds, id]);
+			}
+
+			const id = setTimeout(() => {
+				amIPlayerA ?
+					setPlayerAPoints({
+						points: isCorrect ? playerAPoints?.points + 1 : playerAPoints?.points,
+						attempts: playerAPoints?.attempts + 1
+					}) :
+					setPlayerBPoints({
+						points: isCorrect ? playerBPoints?.points + 1 : playerBPoints?.points,
+						attempts: playerBPoints?.attempts + 1
+					});
+				setIsMyTurn(prev => !prev);
+			}, 750);
+
+			setTimeoutIds([...timeoutIds, id]);
+
+		}
+
+		setClickedCard(undefined);
+	};
+
+	// change current turn
+	useEffect(() => {
+		cards?.map((card) => {
+			if (isMyTurn === null) return card;
+
+			// if card is not flipped (not guessed yet)
+			if (!card.flipped) {
+				card.clickable = true;
+			}
+
+			return card;
+		});
+	}, [cards, isMyTurn]);
+
+	// cleanup function
+	useEffect(() => {
+		return () => {
+			for (let timeout of timeoutIds) {
+				clearTimeout(timeout);
+			}
+		};
+	}, [timeoutIds]);
+
+	return <>
+		{isOpponentJoined ? <div>
+				<Timer gameWinner={winner}/>
+				{isMyTurn !== null && <h2>{isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!'}</h2>}
+				{playerAPoints !== null &&
+					playerBPoints !== null &&
+                <>
+                    <div>You: {JSON.stringify(amIPlayerA ? playerAPoints : playerBPoints)}</div>
+
+                    <div>Opponent: {JSON.stringify(!amIPlayerA ? playerAPoints : playerBPoints)}</div>
+                </>
+				}
+				<Grid $boardSize={selectedLevel === "easy" ? 4 : 6}>
+					{cards?.map((card) => (
+						<Card key={card.id} disabled={!isMyTurn} card={card} callback={handleCardClick}/>
+					))}
+				</Grid>
+			</div> :
+			<div>{opponentLeft ? 'Opponent has left - refresh page to start game once again' : 'Waiting for opponent to join...'}</div>}
+	</>;
 };
 
 export default MemoryMechanism;

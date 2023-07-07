@@ -19,40 +19,23 @@ import card18 from "./images_card/card18.png";
 import cardBack from './images_card/logo.png';
 
 export type CardType = {
-    id: string;
-    flipped: boolean;
-    backImage: string;
-    frontImage: string;
-    clickable: boolean;
-    matchingCardId: string;
+	id: number;
+	boardIdx: number;
+	flipped: boolean;
+	backImage: string;
+	frontImage: string;
+	clickable: boolean;
 };
 
-// Put the images in an array
-const cards: string[] = [card1, card2, card3, card4, card5, card6, card7, card8,card9, card10, card11,card12,card13,card14,card15,card16,card17,card18];
+const cards: string[] = [card1, card2, card3, card4, card5, card6, card7, card8, card9, card10, card11, card12, card13, card14, card15, card16, card17, card18];
 
-export const createBoard4x4 = (): CardType[] => {
-    const selectedCards = cards.slice(0, 8); // Wybierz pierwsze 8 elementów z tablicy cards
-    const duplicatedCards = [...selectedCards, ...selectedCards];
-
-    return duplicatedCards.map((card, i) => ({
-        id: `card${i}`,
-        flipped: false,
-        backImage: cardBack,
-        frontImage: card,
-        clickable: true,
-        matchingCardId: i < selectedCards.length ? `card${i + selectedCards.length}` : `card${i - selectedCards.length}`
-    }));
-};
-export const createBoard6x6 = (): CardType[] => {
-    const selectedCards = cards.slice(0, 18);
-    const duplicatedCards = [...selectedCards, ...selectedCards];
-
-    return duplicatedCards.map((card, i) => ({
-        id: `card${i}`,
-        flipped: false,
-        backImage: cardBack,
-        frontImage: card,
-        clickable: true,
-        matchingCardId: i < selectedCards.length ? `card${i + selectedCards.length}` : `card${i - selectedCards.length}`
-    }));
+export const createBoard = (board: number[]): CardType[] => {
+	return board.map((card, i) => ({
+		id: i,
+		boardIdx: card,
+		flipped: false,
+		backImage: cardBack,
+		frontImage: cards[card],
+		clickable: true
+	}));
 };

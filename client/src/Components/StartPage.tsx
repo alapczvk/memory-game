@@ -1,38 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Choose, Headline } from "./App.styles";
-import { v4 as uuidv4 } from 'uuid';
+import React from 'react';
+import {Button, Headline} from './App.styles';
+import {v4 as uuidv4} from 'uuid';
+import {useNavigate} from 'react-router-dom';
 
-type StartPageProps = {
-    onStart: (selectedLevel: 'easy' | 'medium') => void;
-};
+type StartPageProps = {};
 
-const StartPage: React.FC<StartPageProps> = ({ onStart }) => {
-    const [selectedLevel, setSelectedLevel] = useState('');
-    const [randomLink, setRandomLink] = useState('');
+const StartPage: React.FC<StartPageProps> = () => {
+	const navigate = useNavigate();
 
-    const generateRandomLink = () => {
-        const uuid = uuidv4();
-        setRandomLink(uuid);
-    };
+	const onStart = (selectedLevel: 'easy' | 'medium') => {
+		navigate(`/room/${uuidv4()}?level=${selectedLevel}`);
+	};
 
-    useEffect(() => {
-        generateRandomLink();
-    }, []);
-
-    const handleLevelSelect = (level: 'easy' | 'medium') => {
-        setSelectedLevel(level);
-        onStart(level);
-    };
-
-    return (
-        <div style={{ alignItems: "center", display: "flex", flexDirection: "column" }}>
-            <Headline>2-player Memory Game</Headline>
-            <div style={{ flexDirection: "row" }}>
-                <Choose onClick={() => handleLevelSelect('easy')}>Easy: 4x4</Choose>
-                <Choose onClick={() => handleLevelSelect('medium')}>Medium: 6x6</Choose>
-            </div>
-        </div>
-    );
+	return <div style={{alignItems: "center", display: "flex", flexDirection: "column"}}>
+		<Headline>2-player Memory Game</Headline>
+		<div style={{flexDirection: "row"}}>
+			<Button onClick={() => onStart('easy')}>Easy: 4x4</Button>
+			<Button onClick={() => onStart('medium')}>Medium: 6x6</Button>
+		</div>
+	</div>;
 };
 
 export default StartPage;
