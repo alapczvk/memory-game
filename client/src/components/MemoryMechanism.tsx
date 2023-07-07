@@ -204,7 +204,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 					flipCard(response.chosenCards[1], false, true);
 				}, 750);
 
-				setTimeoutIds([...timeoutIds, id]);
+				setTimeoutIds(prev => [...prev, id]);
 			}
 
 			const id = setTimeout(() => {
