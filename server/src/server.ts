@@ -72,7 +72,8 @@ io.on('connection', socket => {
 			logGameEvents && logInfo('[GAME] Invalid request params');
 			socket.emit('join-or-create-room-error', {
 				success: false,
-				msg: 'Invalid request params!'
+				msg: 'Invalid request params!',
+				isRoomFull: false
 			});
 			return;
 		}
@@ -194,6 +195,7 @@ io.on('connection', socket => {
 					success: false,
 					msg: 'This room is full!',
 					roomId: data.roomId,
+					isRoomFull: true
 				});
 				logGameEvents && logInfo(`[GAME] Room with ID=${data.roomId} is full`);
 				return;
@@ -224,7 +226,7 @@ io.on('connection', socket => {
 			// room does not exist => create a new one
 			socket.join(data.roomId);
 
-			// prepare cards
+			// prepare board
 			const numberOfCards = data.boardSize * data.boardSize;
 			const randomArray = getRandomArray(18, numberOfCards / 2);
 

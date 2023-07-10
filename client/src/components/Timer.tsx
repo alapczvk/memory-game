@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {TimerDiv} from "./App.styles";
+import {TimerDiv} from './App.styles';
 
 type TimerProps = {
 	gameWinner: 'a' | 'b' | 'draw' | null;

@@ -8,15 +8,13 @@ type StartPageProps = {};
 const StartPage: React.FC<StartPageProps> = () => {
 	const navigate = useNavigate();
 
-	const onStart = (selectedLevel: 'easy' | 'medium') => {
-		navigate(`/room/${uuidv4()}?level=${selectedLevel}`);
-	};
+	const onStart = (boardSize: number) => navigate(`/${uuidv4()}?boardSize=${boardSize}`);
 
 	return <div style={{alignItems: "center", display: "flex", flexDirection: "column"}}>
 		<Headline>2-player Memory Game</Headline>
 		<div style={{flexDirection: "row"}}>
-			<Button onClick={() => onStart('easy')}>Easy: 4x4</Button>
-			<Button onClick={() => onStart('medium')}>Medium: 6x6</Button>
+			<Button onClick={() => onStart(4)} style={{margin: '1rem'}}>Easy: 4x4</Button>
+			<Button onClick={() => onStart(6)} style={{margin: '1rem'}}>Medium: 6x6</Button>
 		</div>
 	</div>;
 };
