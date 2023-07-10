@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import exp from "constants";
 
 export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
@@ -41,7 +42,7 @@ export const Headline = styled.h1`
   text-align: center;
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-family: 'Cambria Math',serif;
+  font-family: 'monospace',serif;
 `;
 
 export const TimerDiv = styled.div`
@@ -51,4 +52,20 @@ export const TimerDiv = styled.div`
   background-color: rgba(255, 64, 129, 0.49);
   padding: 10px 20px;
   border-radius: 20px;
+`;
+export const Copy=styled.button`
+  font-family: monospace;
+  font-size: 20px;
+  display: inline-flex;
+  background-color: rgba(255, 64, 129, 0.49);
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+`;
+export const Headline2 = styled.h3`
+  font-size: 1.5rem;
+  color: rgba(121, 3, 61, 0.82);
+  //text-align: center;
+  margin-bottom: 1.5rem;
+  font-family: 'monospace', serif;
 `;

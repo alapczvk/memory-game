@@ -1,6 +1,7 @@
 import React from 'react';
 import Timer from './Timer';
 import {IPoints} from '../types/IRoom';
+import {Headline2, TimerDiv} from "./App.styles";
 
 type MemoryMechanismProps = {
 	winner: 'a' | 'b' | 'draw' | null,
@@ -25,17 +26,17 @@ const Dashboard: React.FC<MemoryMechanismProps> = ({winner, amIPlayerA, isMyTurn
 		</h2>
 
 		{isMyTurn != null && winner == null &&
-          <h2>
+          <Headline2 style={{alignItems:"left"}}>
 				 {isMyTurn ?
 					 'It\'s your turn!' :
 					 'It\'s your opponent\'s turn!'}
-          </h2>
+          </Headline2>
 		}
 
 		{playerAPoints !== null && playerBPoints !== null &&
           <>
-              <div>You: {JSON.stringify(amIPlayerA ? playerAPoints : playerBPoints)}</div>
-              <div>Opponent: {JSON.stringify(!amIPlayerA ? playerAPoints : playerBPoints)}</div>
+              <TimerDiv style={{marginRight:"5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</TimerDiv>
+              <TimerDiv>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</TimerDiv>
           </>
 		}
 	</>;
