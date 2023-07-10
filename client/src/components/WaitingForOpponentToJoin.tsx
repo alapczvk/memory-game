@@ -1,7 +1,14 @@
-import React from 'react';
-import {Headline2} from "./App.styles";
+import React  from 'react';
+import {Copy, Headline2} from "./App.styles";
 import logo from '../assets/logo.png';
+import {useState} from "react";
 const WaitingForOpponentToJoin = () => {
+	const [isCopied, setIsCopied] = useState(false);
+	const copyToClipboard = () => {
+		const url = window.location.href;
+		navigator.clipboard.writeText(url);
+		setIsCopied(true)
+	};
 
 	return <div style={{  display: "flex",
 		flexDirection: "column",
@@ -30,6 +37,7 @@ const WaitingForOpponentToJoin = () => {
               opacity: 0.3;
             }
           }
+          
         `}
 		</style>
 		<img
@@ -39,6 +47,7 @@ const WaitingForOpponentToJoin = () => {
 			className="logo-animation"
 		/>
 		<Headline2>Waiting for opponent to join...</Headline2>
+		<Copy onClick={copyToClipboard}>{isCopied ? "Copied to clipboard!" : "Click here to copy link!"}</Copy>
 	</div>
 };
 
