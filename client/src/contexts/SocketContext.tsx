@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {io, Socket} from 'socket.io-client';
 import ISocketContext from '../types/ISocketContext';
+import config from '../config';
 
 const SocketContext = createContext<ISocketContext | null>(null);
 
@@ -8,14 +9,13 @@ export function useSocket(): ISocketContext | null {
 	return useContext(SocketContext);
 }
 
-export function SocketProvider({children}: { children: JSX.Element }) {
+export function SocketProvider({children}: { children: React.ReactNode }) {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [isConnected, setIsConnected] = useState<boolean>(false);
 	const [reconnectAttempt, setReconnectAttempt] = useState<number>(0);
-	const [isRoomJoined, setIsRoomJoined] = useState<boolean>(false);
 
 	useEffect(() => {
-		const newSocket = io('localhost:5000', {
+		const newSocket = io(config.socketIoServerAddress, {
 			autoConnect: true
 		});
 
@@ -84,9 +84,7 @@ export function SocketProvider({children}: { children: JSX.Element }) {
 	return <SocketContext.Provider value={{
 		socket,
 		isConnected,
-		reconnectAttempt,
-		isRoomJoined,
-		setIsRoomJoined
+		reconnectAttempt
 	}}>
 		{children}
 	</SocketContext.Provider>;
