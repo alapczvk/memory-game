@@ -107,7 +107,7 @@ io.on('connection', socket => {
 
 				logGameEvents && logInfo('[GAME] Invalid request params');
 
-				socket.emit('ingle-guess-attempt-error', {
+				socket.emit('single-guess-attempt-error', {
 					success: false,
 					msg: 'Invalid request params!'
 				});
