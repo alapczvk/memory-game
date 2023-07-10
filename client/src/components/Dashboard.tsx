@@ -1,9 +1,9 @@
 import React from 'react';
 import Timer from './Timer';
 import {IPoints} from '../types/IRoom';
-import {Headline2, TimerDiv} from "./App.styles";
+import {Headline2, Div} from "./App.styles";
 
-type MemoryMechanismProps = {
+type DashboardProps = {
 	winner: 'a' | 'b' | 'draw' | null,
 	amIPlayerA: boolean | null,
 	isMyTurn: boolean | null,
@@ -11,7 +11,7 @@ type MemoryMechanismProps = {
 	playerBPoints: IPoints
 };
 
-const Dashboard: React.FC<MemoryMechanismProps> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
+const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
 	return <>
 		<Timer gameWinner={winner}/>
 
@@ -35,8 +35,8 @@ const Dashboard: React.FC<MemoryMechanismProps> = ({winner, amIPlayerA, isMyTurn
 
 		{playerAPoints !== null && playerBPoints !== null &&
           <>
-              <TimerDiv style={{marginRight:"5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</TimerDiv>
-              <TimerDiv>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</TimerDiv>
+              <Div style={{marginRight:"5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
+              <Div>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
           </>
 		}
 	</>;

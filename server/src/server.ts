@@ -79,11 +79,11 @@ io.on('connection', socket => {
 		}
 
 		socket.on('disconnect', () => {
-			logGameEvents && logInfo(`[GAME] Player with socket.id=${socket.id} disconnected from room with ID=${data.roomId}`);
-
 			if (!isUserACreatorOrJoinerOfRoom(socket.id, data.roomId, rooms)) {
 				return;
 			}
+
+			logGameEvents && logInfo(`[GAME] Player with socket.id=${socket.id} disconnected from room with ID=${data.roomId}`);
 
 			socket.to(data.roomId).emit('opponent-left', {
 				success: false,

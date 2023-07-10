@@ -2,13 +2,13 @@ import React from 'react';
 import { Wrapper, FrontImg, BackImg } from './Card.styles';
 import ICard from '../types/ICard';
 
-type Props = {
+type CardProps = {
    card: ICard;
    disabled: boolean;
    callback: (card: ICard) => any;
 };
 
-const Card: React.FC<Props> = ({ card, disabled, callback }) => {
+const Card: React.FC<CardProps> = ({ card, disabled, callback }) => {
    const handleClick = () => {
       if (card.clickable && !disabled) callback(card);
    };

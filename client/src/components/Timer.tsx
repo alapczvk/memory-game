@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {TimerDiv} from './App.styles';
+import {Div} from './App.styles';
 
 type TimerProps = {
 	gameWinner: 'a' | 'b' | 'draw' | null;
@@ -29,9 +29,7 @@ const Timer: React.FC<TimerProps> = ({gameWinner}) => {
 		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	};
 
-	return <TimerDiv>
-		Time: {formatTime(time)}
-	</TimerDiv>;
+	return <Div>Time: {formatTime(time)}</Div>;
 };
 
 export default Timer;

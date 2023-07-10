@@ -42,10 +42,10 @@ export const Headline = styled.h1`
   text-align: center;
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-family: 'monospace',serif;
+  font-family: 'monospace', serif;
 `;
 
-export const TimerDiv = styled.div`
+export const Div = styled.div`
   font-family: monospace;
   font-size: 20px;
   display: inline-flex;
@@ -53,7 +53,7 @@ export const TimerDiv = styled.div`
   padding: 10px 20px;
   border-radius: 20px;
 `;
-export const Copy=styled.button`
+export const Copy = styled.button`
   font-family: monospace;
   font-size: 20px;
   display: inline-flex;
