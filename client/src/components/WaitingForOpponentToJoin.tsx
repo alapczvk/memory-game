@@ -46,7 +46,7 @@ const WaitingForOpponentToJoin = () => {
 			style={{ display: "block", margin: "0 auto", marginBottom: "16px", animation: "logo-animation 3.5s linear infinite" }}
 			className="logo-animation"
 		/>
-		<Headline2>Waiting for opponent to join...</Headline2>
+		<Headline2 style={{alignItems:"center"}}>Waiting for opponent to join...</Headline2>
 		<Copy onClick={copyToClipboard}>{isCopied ? "Copied to clipboard!" : "Click here to copy link!"}</Copy>
 	</div>
 };

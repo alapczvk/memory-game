@@ -65,7 +65,7 @@ export const Copy=styled.button`
 export const Headline2 = styled.h3`
   font-size: 1.5rem;
   color: rgba(121, 3, 61, 0.82);
-  text-align: center;
+  //text-align: center;
   margin-bottom: 1.5rem;
   font-family: 'monospace', serif;
 `;
