@@ -5,6 +5,7 @@ import {SocketProvider} from './contexts/SocketContext';
 import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import {v4 as uuidv4} from 'uuid';
 
+
 const App = () => {
 	return <Router>
 		<SocketProvider>
