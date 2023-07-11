@@ -205,8 +205,10 @@ const MemoryMechanism: React.FC<MemoryMechanismPropsType> = () => {
 			playerA: IPoints,
 			playerB: IPoints
 		}) => {
+			if (winner !== null) return;
+
 			console.log(`[INFO] ${response.msg}`);
-			winner == null && alert(response.msg);
+			alert(response.msg);
 			setIsOpponentJoined(false);
 			setOpponentLeft(true);
 			socket?.disconnect();
