@@ -3,7 +3,7 @@ services:
   af-memory-game-backend:
     image: af-memory-game:1.0
     volumes:
-      - /var/data/AF-memory-game/client/build/:/app/public
+      - /var/data/memory-game/client/build/:/app/public
     restart: on-failure
     command: >
       bash -c "node src/index.js"
