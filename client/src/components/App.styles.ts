@@ -3,9 +3,9 @@ import styled from 'styled-components';
 export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
   grid-template-columns: repeat(${props => props.$boardSize}, minmax(50px, 1fr));
-  grid-gap: 0.5rem;
+  grid-gap: .5rem;
   max-width: 600px;
-  margin: 1.5rem auto;
+  margin: .3rem auto;
   overflow: hidden;
 `;
 

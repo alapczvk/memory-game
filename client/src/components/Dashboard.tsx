@@ -1,7 +1,7 @@
 import React from 'react';
 import Timer from './Timer';
 import {IPoints} from '../types/IRoom';
-import {Headline2, Div} from './App.styles';
+import {Headline2, Div, ButtonSmall} from './App.styles';
 
 type DashboardPropsType = {
 	winner: 'a' | 'b' | 'draw' | null,
@@ -14,6 +14,8 @@ type DashboardPropsType = {
 const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
 	return <>
 		<Timer style={{margin: '1rem'}} gameWinner={winner}/>
+
+		{winner !== null && <ButtonSmall style={{margin: '1rem'}} onClick={() => window.location.reload()}>Click here to restart</ButtonSmall>}
 
 		<Headline2 style={{margin: '2rem'}}>
 			{winner != null && winner !== 'draw' &&
@@ -29,10 +31,10 @@ const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, 
 		</Headline2>
 
 		{playerAPoints !== null && playerBPoints !== null &&
-          <>
+          <div>
               <Div style={{margin: '1rem'}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
               <Div>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
-          </>
+          </div>
 		}
 	</>;
 };
