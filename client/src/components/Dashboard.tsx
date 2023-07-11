@@ -13,7 +13,7 @@ type DashboardPropsType = {
 
 const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
 	return <>
-		<Timer gameWinner={winner}/>
+		<Timer style={{margin: '1rem'}} gameWinner={winner}/>
 
 		<Headline2 style={{margin: '2rem'}}>
 			{winner != null && winner !== 'draw' &&
@@ -22,15 +22,11 @@ const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, 
 					'Your opponent won!')
 			}
 			{winner === 'draw' && 'It\'s a draw!'}
-		</Headline2>
 
-		{isMyTurn != null && winner == null &&
-          <Headline2 style={{alignItems: "left"}}>
-				 {isMyTurn ?
-					 'It\'s your turn!' :
-					 'It\'s your opponent\'s turn!'}
-          </Headline2>
-		}
+			{winner == null && isMyTurn != null &&
+				(isMyTurn ? 'It\'s your turn!' : 'It\'s your opponent\'s turn!')
+			}
+		</Headline2>
 
 		{playerAPoints !== null && playerBPoints !== null &&
           <>

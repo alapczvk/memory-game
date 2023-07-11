@@ -3,9 +3,10 @@ import {Div} from './App.styles';
 
 type TimerProps = {
 	gameWinner: 'a' | 'b' | 'draw' | null;
+	style?: React.CSSProperties
 };
 
-const Timer: React.FC<TimerProps> = ({gameWinner}) => {
+const Timer: React.FC<TimerProps> = ({gameWinner, style}) => {
 	const [time, setTime] = useState(0);
 
 	useEffect(() => {
@@ -29,7 +30,7 @@ const Timer: React.FC<TimerProps> = ({gameWinner}) => {
 		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	};
 
-	return <Div>Time: {formatTime(time)}</Div>;
+	return <Div style={{...style}}>Time: {formatTime(time)}</Div>;
 };
 
 export default Timer;
