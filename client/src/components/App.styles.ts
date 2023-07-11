@@ -1,12 +1,11 @@
 import styled from 'styled-components';
-import exp from "constants";
 
 export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
   grid-template-columns: repeat(${props => props.$boardSize}, minmax(50px, 1fr));
   grid-gap: 0.5rem;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 1.5rem auto;
   overflow: hidden;
 `;
 

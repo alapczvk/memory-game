@@ -1,7 +1,7 @@
 const config = {
 	socketIoServerAddress: 'localhost:5000',
 	game: {
-		defaultCardTheme: 'dogs'
+		defaultCardTheme: 'teleinfa'
 	}
 };
 

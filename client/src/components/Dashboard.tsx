@@ -26,7 +26,7 @@ const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, play
 		</h2>
 
 		{isMyTurn != null && winner == null &&
-          <Headline2 style={{alignItems:"left"}}>
+          <Headline2 style={{alignItems: "left"}}>
 				 {isMyTurn ?
 					 'It\'s your turn!' :
 					 'It\'s your opponent\'s turn!'}
@@ -35,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, play
 
 		{playerAPoints !== null && playerBPoints !== null &&
           <>
-              <Div style={{marginRight:"5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
+              <Div style={{marginRight: "5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
               <Div>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
           </>
 		}
