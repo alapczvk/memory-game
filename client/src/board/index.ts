@@ -18,6 +18,10 @@ const getCards = (theme: string): string[] => {
 };
 
 export const createBoard = (board: number[], theme: string=config.game.defaultCardTheme): ICard[] => {
+	if (!config.game.cardThemes.includes(theme)) {
+		theme = config.game.defaultCardTheme;
+	}
+
 	const cards = getCards(theme);
 
 	return board.map((card, i) => ({

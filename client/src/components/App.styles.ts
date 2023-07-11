@@ -9,6 +9,14 @@ export const Grid = styled.div<{ $boardSize: number }>`
   overflow: hidden;
 `;
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+
 export const Button = styled.button`
   background-color: rgba(255, 64, 129, 0.49);
   color: white;
@@ -19,6 +27,9 @@ export const Button = styled.button`
   cursor: pointer;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   transition: all 0.5s;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   align-content: center;
   height: 10rem;
   width: 10rem;
@@ -52,7 +63,8 @@ export const Div = styled.div`
   padding: 10px 20px;
   border-radius: 20px;
 `;
-export const Copy = styled.button`
+
+export const ButtonSmall = styled.button`
   font-family: monospace;
   font-size: 20px;
   display: inline-flex;
@@ -60,7 +72,12 @@ export const Copy = styled.button`
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 20px;
+
+  &:hover {
+    background-color: #7b3148;
+  }
 `;
+
 export const Headline2 = styled.h3`
   font-size: 1.5rem;
   color: rgba(121, 3, 61, 0.82);

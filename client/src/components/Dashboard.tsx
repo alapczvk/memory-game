@@ -1,9 +1,9 @@
 import React from 'react';
 import Timer from './Timer';
 import {IPoints} from '../types/IRoom';
-import {Headline2, Div} from "./App.styles";
+import {Headline2, Div} from './App.styles';
 
-type DashboardProps = {
+type DashboardPropsType = {
 	winner: 'a' | 'b' | 'draw' | null,
 	amIPlayerA: boolean | null,
 	isMyTurn: boolean | null,
@@ -11,18 +11,17 @@ type DashboardProps = {
 	playerBPoints: IPoints
 };
 
-const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
+const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
 	return <>
 		<Timer gameWinner={winner}/>
 
-		<h2>{winner === 'draw' && 'It\'s a draw!'}</h2>
-
-		<Headline2>
+		<Headline2 style={{margin: '2rem'}}>
 			{winner != null && winner !== 'draw' &&
 				(((winner === 'a' && amIPlayerA) || (!amIPlayerA && winner === 'b')) ?
 					'You won!' :
 					'Your opponent won!')
 			}
+			{winner === 'draw' && 'It\'s a draw!'}
 		</Headline2>
 
 		{isMyTurn != null && winner == null &&
@@ -35,7 +34,7 @@ const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, play
 
 		{playerAPoints !== null && playerBPoints !== null &&
           <>
-              <Div style={{marginRight: "5px"}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
+              <Div style={{margin: '1rem'}}>You: {amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
               <Div>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
           </>
 		}

@@ -1,21 +1,58 @@
-import React from 'react';
-import {Button, Headline} from './App.styles';
+import React, {useState} from 'react';
+import {Button, ButtonGroup, ButtonSmall, Headline, Headline2} from './App.styles';
 import {v4 as uuidv4} from 'uuid';
 import {useNavigate} from 'react-router-dom';
 
-type StartPageProps = {};
+type StartPagePropsType = {};
 
-const StartPage: React.FC<StartPageProps> = () => {
+const StartPage: React.FC<StartPagePropsType> = () => {
+	const [boardSize, setBoardSize] = useState<number | null>(null);
+	const [cardTheme, setCardTheme] = useState<string | null>(null);
+
 	const navigate = useNavigate();
 
-	const onStart = (boardSize: number) => navigate(`/${uuidv4()}?boardSize=${boardSize}`);
+	const startGame = () => {
+		if (boardSize === null) return alert('Please select a level');
+		if (cardTheme === null) return alert('Please select a card theme');
 
-	return <div style={{alignItems: "center", display: "flex", flexDirection: "column"}}>
+		navigate(`/${uuidv4()}?boardSize=${boardSize}&cardTheme=${cardTheme}`);
+	}
+
+	return <div style={{alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
 		<Headline>2-player Memory Game</Headline>
-		<div style={{flexDirection: "row"}}>
-			<Button onClick={() => onStart(4)} style={{margin: '1rem'}}>Easy: 4x4</Button>
-			<Button onClick={() => onStart(6)} style={{margin: '1rem'}}>Medium: 6x6</Button>
-		</div>
+
+		<Headline2>Choose level</Headline2>
+		<ButtonGroup>
+			<Button
+				onClick={() => setBoardSize(prevState => prevState === 4 ? null : 4)}
+				style={{margin: '0 1rem', backgroundColor: boardSize === 4 ? '#7b3148' : ''}}>
+				Easy: 4x4
+			</Button>
+			<Button
+				onClick={() => setBoardSize(prevState => prevState === 6 ? null : 6)}
+				style={{margin: '0 1rem', backgroundColor: boardSize === 6 ? '#7b3148' : ''}}>
+				Medium: 6x6
+			</Button>
+		</ButtonGroup>
+
+		<Headline2 style={{marginTop: '3rem'}}>Choose card theme</Headline2>
+		<ButtonGroup>
+			<Button
+				onClick={() => setCardTheme(prevState => prevState === 'dogs' ? null : 'dogs')}
+				style={{margin: '0 1rem', backgroundColor: cardTheme === 'dogs' ? '#7b3148' : ''}}>
+				Dogs
+			</Button>
+			<Button
+				onClick={() => setCardTheme(prevState => prevState === 'teleinfa' ? null : 'teleinfa')}
+				style={{margin: '0 1rem', backgroundColor: cardTheme === 'teleinfa' ? '#7b3148' : ''}}>
+				Teleinfiarze
+			</Button>
+		</ButtonGroup>
+
+		<ButtonSmall
+			style={{margin: '3rem', width: '10rem'}}
+			onClick={startGame}
+		>Start game</ButtonSmall>
 	</div>;
 };
 

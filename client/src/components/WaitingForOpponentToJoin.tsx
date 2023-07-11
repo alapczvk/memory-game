@@ -1,7 +1,5 @@
-import React, {useState} from 'react';
-import {Copy, Headline2} from './App.styles';
-import logo from '../assets/logo.png';
-import '../styles/logo.css';
+import {useState} from 'react';
+import InfoPage from './InfoPage';
 
 const WaitingForOpponentToJoin = () => {
 	const [isCopied, setIsCopied] = useState(false);
@@ -12,28 +10,11 @@ const WaitingForOpponentToJoin = () => {
 		setIsCopied(true)
 	};
 
-	return <div style={{
-		display: "flex",
-		flexDirection: "column",
-		justifyContent: "center",
-		alignItems: "center",
-		height: "90vh",
-		overflowY: "hidden"
-	}}>
-		<img
-			src={logo}
-			alt="Logo"
-			style={{
-				display: "block",
-				margin: "0 auto",
-				marginBottom: "16px",
-				animation: "logo-animation 3.5s linear infinite"
-			}}
-			className="logo-animation"
-		/>
-		<Headline2 style={{alignItems: "center"}}>Waiting for opponent to join...</Headline2>
-		<Copy onClick={copyToClipboard}>{isCopied ? "Copied to clipboard!" : "Click here to copy link!"}</Copy>
-	</div>
+	return <InfoPage
+		headlineText={'Waiting for opponent to join...'}
+		buttonText={isCopied ? 'Copied to clipboard!' : 'Click here to copy link!'}
+		buttonOnclick={copyToClipboard}
+	/>;
 };
 
 export default WaitingForOpponentToJoin;

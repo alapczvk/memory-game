@@ -7,19 +7,21 @@ import ISocketContext from '../types/ISocketContext';
 import IRoom, {IPoints} from '../types/IRoom';
 import ICard from '../types/ICard';
 
-import OpponentHasLeft from './OpponentHasLeft';
+import OpponentLeft from './OpponentLeft';
 import WaitingForOpponentToJoin from './WaitingForOpponentToJoin';
 import RoomIsFullError from './RoomIsFullError';
 import Dashboard from './Dashboard';
 import Card from './Card';
 
 import {createBoard} from '../board';
+import config from '../config';
 
-type MemoryMechanismProps = {};
+type MemoryMechanismPropsType = {};
 
-const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
+const MemoryMechanism: React.FC<MemoryMechanismPropsType> = () => {
 	const [cards, setCards] = useState<ICard[]>();
 	const [boardSize, setBoardSize] = useState<number | null>(null);
+	const [cardTheme, setCardTheme] = useState<string>(config.game.defaultCardTheme);
 	const [clickedCard, setClickedCard] = useState<undefined | ICard>(undefined);
 	const [cardsClickedInThisTurn, setCardsClickedInThisTurn] = useState<number>(0);
 
@@ -58,6 +60,24 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		}
 
 		setBoardSize(bSize);
+	}, [searchParams, setSearchParams]);
+
+	// set card theme based on URL `cardTheme` param
+	useEffect(() => {
+		let theme = searchParams.get('cardTheme') || config.game.defaultCardTheme;
+
+		if (!config.game.cardThemes.includes(theme)) {
+			console.warn(`[WARNING] Card theme incorrect! Continuing with ${config.game.defaultCardTheme}...`);
+
+			theme = config.game.defaultCardTheme;
+
+			setSearchParams(params => {
+				params.set('cardTheme', config.game.defaultCardTheme);
+				return params;
+			});
+		}
+
+		setCardTheme(theme);
 	}, [searchParams, setSearchParams]);
 
 	// function to flip card selected by its index
@@ -139,7 +159,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 				});
 			}
 
-			setCards(createBoard(response.room.board));
+			setCards(createBoard(response.room.board, cardTheme));
 
 			setIsMyTurn((response.room.turn === 'a' &&
 					socket?.id === response.room.createdBySocketId) ||
@@ -160,7 +180,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 		return () => {
 			socket?.off('room-joined', handler);
 		}
-	}, [boardSize, setIsRoomJoined, setSearchParams, socket]);
+	}, [boardSize, cardTheme, setIsRoomJoined, setSearchParams, socket]);
 
 	// player-joined
 	useEffect(() => {
@@ -364,7 +384,7 @@ const MemoryMechanism: React.FC<MemoryMechanismProps> = () => {
 
 		{!isOpponentJoined && !opponentLeft && !isRoomFull && <WaitingForOpponentToJoin/>}
 
-		{opponentLeft && <OpponentHasLeft/>}
+		{opponentLeft && <OpponentLeft/>}
 
 		{isOpponentJoined && !opponentLeft &&
           <>
