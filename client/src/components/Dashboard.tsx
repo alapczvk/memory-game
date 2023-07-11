@@ -17,13 +17,13 @@ const Dashboard: React.FC<DashboardProps> = ({winner, amIPlayerA, isMyTurn, play
 
 		<h2>{winner === 'draw' && 'It\'s a draw!'}</h2>
 
-		<h2>
+		<Headline2>
 			{winner != null && winner !== 'draw' &&
 				(((winner === 'a' && amIPlayerA) || (!amIPlayerA && winner === 'b')) ?
 					'You won!' :
 					'Your opponent won!')
 			}
-		</h2>
+		</Headline2>
 
 		{isMyTurn != null && winner == null &&
           <Headline2 style={{alignItems: "left"}}>

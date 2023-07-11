@@ -2,10 +2,9 @@ import React from 'react';
 import {Copy, Headline2} from './App.styles';
 import doNotEnter from '../assets/do-not-enter-sign.png';
 import {Link} from "react-router-dom";
-
 const RoomIsFullError = () => {
 
-	return <div style={{
+	return <div className="container" style={{
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',
