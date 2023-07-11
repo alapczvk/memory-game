@@ -1,5 +1,5 @@
 const config = {
-	socketIoServerAddress: 'localhost:5000',
+	socketIoServerAddress: 'https://afmemory.fkor.us',
 	game: {
 		cardThemes: ['teleinfa', 'dogs'],
 		defaultCardTheme: 'teleinfa'
