@@ -12,10 +12,15 @@ type DashboardPropsType = {
 };
 
 const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, playerAPoints, playerBPoints}) => {
-	return <>
+	return <div style={{padding: '.3rem', width: '70%', backgroundColor: 'lightblue', borderRadius: '20px'}}>
 		<Timer style={{margin: '1rem'}} gameWinner={winner}/>
 
-		{winner !== null && <ButtonSmall style={{margin: '1rem'}} onClick={() => window.location.reload()}>Click here to restart</ButtonSmall>}
+		{winner !== null &&
+          <ButtonSmall
+              style={{margin: '0 1rem'}}
+              onClick={() => window.location.reload()}>
+              Click here to restart
+          </ButtonSmall>}
 
 		<Headline2 style={{margin: '2rem'}}>
 			{winner != null && winner !== 'draw' &&
@@ -36,7 +41,7 @@ const Dashboard: React.FC<DashboardPropsType> = ({winner, amIPlayerA, isMyTurn, 
               <Div>Opponent: {!amIPlayerA ? playerAPoints.points : playerBPoints.points}</Div>
           </div>
 		}
-	</>;
+	</div>;
 };
 
 export default Dashboard;

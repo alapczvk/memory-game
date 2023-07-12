@@ -27,8 +27,8 @@ const sharedStyles = css`
 
 export const FrontImg = styled.img<Props>`
   ${sharedStyles};
-  width: 100px;
-  height: 100px;
+  max-width: 100px;
+  max-height: 100px;
   cursor: ${props => (props.$disabled ? 'not-allowed' : (props.$clickable ? 'pointer' : 'default'))};
   z-index: ${props => (props.$flipped ? 2 : 1)};
   transform: ${props => (props.$flipped ? 'rotate(0deg)' : 'rotateY(180deg)')};
@@ -36,12 +36,13 @@ export const FrontImg = styled.img<Props>`
 
 export const BackImg = styled.img<Props>`
   ${sharedStyles};
-  width: 100px;
-  height: 100px;
+  max-width: 100px;
+  max-height: 100px;
   cursor: ${props => (props.$disabled ? 'not-allowed' : (props.$clickable ? 'pointer' : 'default'))};
   z-index: ${props => (props.$flipped ? 1 : 2)};
   transform: ${props => (props.$flipped ? 'rotateY(180deg)' : 'rotate(360deg)')};
   position: absolute;
   top: 0px;
   left: 0px;
+  background-color: lightblue;
 `;
