@@ -25,12 +25,12 @@ const StartPage: React.FC<StartPagePropsType> = () => {
 		<ButtonGroup>
 			<Button
 				onClick={() => setBoardSize(prevState => prevState === 4 ? null : 4)}
-				style={{margin: '0 1rem', backgroundColor: boardSize === 4 ? '#7b3148' : ''}}>
+				style={{margin: '.5rem 1rem', backgroundColor: boardSize === 4 ? '#7b3148' : ''}}>
 				Easy: 4x4
 			</Button>
 			<Button
 				onClick={() => setBoardSize(prevState => prevState === 6 ? null : 6)}
-				style={{margin: '0 1rem', backgroundColor: boardSize === 6 ? '#7b3148' : ''}}>
+				style={{margin: '.5rem 1rem', backgroundColor: boardSize === 6 ? '#7b3148' : ''}}>
 				Medium: 6x6
 			</Button>
 		</ButtonGroup>
@@ -39,12 +39,12 @@ const StartPage: React.FC<StartPagePropsType> = () => {
 		<ButtonGroup>
 			<Button
 				onClick={() => setCardTheme(prevState => prevState === 'dogs' ? null : 'dogs')}
-				style={{margin: '0 1rem', backgroundColor: cardTheme === 'dogs' ? '#7b3148' : ''}}>
+				style={{margin: '.5rem 1rem', backgroundColor: cardTheme === 'dogs' ? '#7b3148' : ''}}>
 				Dogs
 			</Button>
 			<Button
 				onClick={() => setCardTheme(prevState => prevState === 'teleinfa' ? null : 'teleinfa')}
-				style={{margin: '0 1rem', backgroundColor: cardTheme === 'teleinfa' ? '#7b3148' : ''}}>
+				style={{margin: '.5rem 1rem', backgroundColor: cardTheme === 'teleinfa' ? '#7b3148' : ''}}>
 				Teleinfiarze
 			</Button>
 		</ButtonGroup>

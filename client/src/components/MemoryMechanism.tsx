@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Grid} from './App.styles';
+import {Column, Grid, Row} from './App.styles';
 import {useParams, useSearchParams} from 'react-router-dom';
 import {useSocket} from '../contexts/SocketContext';
 
@@ -389,26 +389,30 @@ const MemoryMechanism: React.FC<MemoryMechanismPropsType> = () => {
 		{opponentLeft && <OpponentLeft/>}
 
 		{isOpponentJoined && !opponentLeft &&
-          <>
-              <Dashboard
-                  winner={winner}
-                  isMyTurn={isMyTurn}
-                  playerAPoints={playerAPoints}
-                  playerBPoints={playerBPoints}
-                  amIPlayerA={amIPlayerA}
-              />
+          <Row>
+              <Column $size={30}>
+                  <Dashboard
+                      winner={winner}
+                      isMyTurn={isMyTurn}
+                      playerAPoints={playerAPoints}
+                      playerBPoints={playerBPoints}
+                      amIPlayerA={amIPlayerA}
+                  />
+              </Column>
 
-				 {boardSize &&
-                 <Grid $boardSize={boardSize}>
-						  {cards?.map((card) => <Card
-							  key={card.id}
-							  disabled={!isMyTurn}
-							  card={card}
-							  callback={handleCardClick}
-						  />)}
-                 </Grid>
-				 }
-          </>
+              <Column>
+					  {boardSize &&
+                     <Grid $boardSize={boardSize}>
+								{cards?.map((card) => <Card
+									key={card.id}
+									disabled={!isMyTurn}
+									card={card}
+									callback={handleCardClick}
+								/>)}
+                     </Grid>
+					  }
+              </Column>
+          </Row>
 		}
 	</div>;
 };

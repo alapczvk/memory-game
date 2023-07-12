@@ -2,11 +2,34 @@ import styled from 'styled-components';
 
 export const Grid = styled.div<{ $boardSize: number }>`
   display: grid;
-  grid-template-columns: repeat(${props => props.$boardSize}, minmax(50px, 1fr));
+  grid-template-columns: repeat(${props => props.$boardSize}, minmax(3rem, 1fr));
   grid-gap: .5rem;
-  max-width: 600px;
-  margin: .3rem auto;
+  max-width: ${props => props.$boardSize*108}px;
+  padding: .5rem;
   overflow: hidden;
+`;
+
+export const Row = styled.div`
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+`;
+
+export const Column = styled.div<{ $size?: number, $maxSize?: number }>`
+  float: left;
+  width: ${props => props.$size || 40}%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 1rem);
+
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    height: auto;
+  }
 `;
 
 export const ButtonGroup = styled.div`
@@ -81,7 +104,6 @@ export const ButtonSmall = styled.button`
 export const Headline2 = styled.h3`
   font-size: 1.5rem;
   color: rgba(121, 3, 61, 0.82);
-  //text-align: center;
   margin-bottom: 1.5rem;
   font-family: 'monospace', serif;
 `;
